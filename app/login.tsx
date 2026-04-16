@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Colors } from "../constants/theme";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -38,6 +39,7 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="E-mail"
+        placeholderTextColor={Colors.main}
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -46,6 +48,7 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="Senha"
+        placeholderTextColor={Colors.main}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -63,27 +66,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.background,
   },
   title: {
     fontSize: 32,
     fontWeight: "bold",
     marginBottom: 40,
     textAlign: "center",
-    color: "#333",
+    color: Colors.headline,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: Colors.main,
+    color: Colors.paragraph,
     padding: 15,
     borderRadius: 10,
     marginBottom: 15,
   },
   button: {
-    backgroundColor: "#007AFF",
+    backgroundColor: Colors.button,
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
   },
-  buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  buttonText: { color: Colors.buttonText, fontWeight: "bold", fontSize: 16 },
 });

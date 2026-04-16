@@ -1,5 +1,5 @@
 export const Colors = {
-  Background: "#fef6e4",
+  background: "#fef6e4",
   headline: "#001858",
   paragraph: "#172c66",
   button: "#f582ae",
