@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
 import {
@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Colors } from "../constants/theme";
+import { Colors } from "../../constants/theme";
 
 // 1. Dados de exemplo (Mock) - Simulando o que viria de um banco de dados
 const SERVICOS = [
@@ -30,6 +30,7 @@ const SERVICOS = [
 export default function HomeScreen() {
   const [busca, setBusca] = useState("");
   const router = useRouter();
+  const navigation = useNavigation();
 
   // Função para sair (vamos deixar no menu depois)
   const handleLogout = async () => {
@@ -54,9 +55,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {/* CABEÇALHO (Header) */}
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => Alert.alert("Menu", "Em breve: Meus Agendamentos")}
-        >
+        <TouchableOpacity onPress={() => (navigation as any).openDrawer()}>
           <Ionicons name="menu" size={32} color={Colors.stroke} />
         </TouchableOpacity>
 
