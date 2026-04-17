@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { USUARIOS } from "../constants/mockData";
 import { Colors } from "../constants/theme";
 
 export default function LoginScreen() {
@@ -17,16 +18,18 @@ export default function LoginScreen() {
   const Router = useRouter();
 
   const handleLogin = async () => {
-    // Simulação de verificação (após faremos via API)
-    if (email === "admin@teste.com" && password === "1234") {
-      // Gerando "token falso" para o teste
-      const fakeToken = "meu-token-secreto-123";
+    // Encontra o usuario pelo email digitado
+    const usuarioEncontrado = USUARIOS.find(
+      (u) => u.email === email.toLowerCase(),
+    );
 
-      // Slava o token de maneira segura
-      await SecureStore.setItemAsync("userToken", fakeToken);
-      Router.replace("/"); // vai pra homer
+    // Verifica a senha, por enquanto vai ser 1234
+    if (usuarioEncontrado && password === "1234") {
+      //Gerar o token
+      await SecureStore.setItemAsync("userToken", usuarioEncontrado.id);
+      Router.replace("/");
     } else {
-      Alert.alert("Erro", "Usuario invalido!");
+      Alert.alert("Erro", "E-mail ou senha incorretos.");
     }
   };
 
