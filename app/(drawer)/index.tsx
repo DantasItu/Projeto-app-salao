@@ -11,15 +11,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SERVICOS } from "../../constants/mockData"; // Arquivos mockData temporario
+import { SERVICOS } from "../../constants/mockData";
 import { Colors } from "../../constants/theme";
 
 export default function HomeScreen() {
   const [busca, setBusca] = useState("");
-  const router = useRouter();
   const navigation = useNavigation();
+  const router = useRouter();
 
-  // Função para sair (vamos deixar no menu depois)
   const handleLogout = async () => {
     Alert.alert("Sair", "Deseja realmente sair?", [
       { text: "Cancelar", style: "cancel" },
@@ -27,20 +26,19 @@ export default function HomeScreen() {
         text: "Sair",
         onPress: async () => {
           await SecureStore.deleteItemAsync("userToken");
+          // Forçamos a navegação para o login. Isso fará o RootLayout atualizar.
           router.replace("/login");
         },
       },
     ]);
   };
 
-  // 2. Lógica para filtrar a lista conforme o que o usuário digita
   const servicosFiltrados = SERVICOS.filter((servico) =>
     servico.nome.toLowerCase().includes(busca.toLowerCase()),
   );
 
   return (
     <View style={styles.container}>
-      {/* CABEÇALHO (Header) */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => (navigation as any).openDrawer()}>
           <Ionicons name="menu" size={32} color={Colors.stroke} />
@@ -55,7 +53,6 @@ export default function HomeScreen() {
 
       <Text style={styles.welcome}>Olá! O que vamos fazer hoje?</Text>
 
-      {/* BARRA DE BUSCA */}
       <View style={styles.searchContainer}>
         <Ionicons
           name="search"
@@ -72,7 +69,6 @@ export default function HomeScreen() {
         />
       </View>
 
-      {/* LISTA DE SERVIÇOS */}
       <FlatList
         data={servicosFiltrados}
         keyExtractor={(item) => item.id}
@@ -154,12 +150,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    // Sombra para iOS
     shadowColor: Colors.stroke,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    // Sombra para Android
     elevation: 3,
   },
   cardText: {

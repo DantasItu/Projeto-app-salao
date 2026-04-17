@@ -18,15 +18,13 @@ export default function LoginScreen() {
   const Router = useRouter();
 
   const handleLogin = async () => {
-    // Encontra o usuario pelo email digitado
     const usuarioEncontrado = USUARIOS.find(
       (u) => u.email === email.toLowerCase(),
     );
 
-    // Verifica a senha, por enquanto vai ser 1234
     if (usuarioEncontrado && password === "1234") {
-      //Gerar o token
       await SecureStore.setItemAsync("userToken", usuarioEncontrado.id);
+      // Forçamos o redirecionamento para o RootLayout perceber
       Router.replace("/");
     } else {
       Alert.alert("Erro", "E-mail ou senha incorretos.");
