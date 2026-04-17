@@ -1,50 +1,70 @@
-# Welcome to your Expo app 👋
+============================================================
+           DOCUMENTAÇÃO DO PROJETO: SALÃO PRO
+============================================================
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Este documento resume o progresso do desenvolvimento, a estrutura
+do aplicativo e as decisões técnicas tomadas até agora.
 
-## Get started
+1. ESTRUTURA DE PASTAS (EXPO ROUTER)
+------------------------------------
+O projeto utiliza o sistema de rotas baseado em arquivos:
 
-1. Install dependencies
+app/
+  ├── _layout.tsx         -> O "Porteiro" (Verifica login e protege rotas)
+  ├── login.tsx           -> Tela de entrada
+  └── (drawer)/           -> Grupo de telas que possuem o menu lateral
+       ├── _layout.tsx    -> Configuração visual do Menu Lateral (Drawer)
+       ├── index.tsx      -> Tela Principal (Home do Cliente)
+       └── agendamentos.tsx -> Tela de histórico de agendamentos
 
-   ```bash
-   npm install
-   ```
+constants/
+  └── theme.ts            -> Centralização de cores e estilos
 
-2. Start the app
+2. O QUE FOI FEITO (PASSO A PASSO)
+----------------------------------
+A. SETUP E SEGURANÇA:
+- Inicialização com Expo e TypeScript.
+- Instalação do 'expo-secure-store' para salvar o token de login.
+- Configuração do Root Layout (_layout.tsx) para redirecionar o usuário:
+  - Sem Token -> Vai para /login
+  - Com Token -> Vai para / (Home)
 
-   ```bash
-   npx expo start
-   ```
+B. INTERFACE E DESIGN:
+- Criação de uma paleta de cores personalizada (constants/theme.ts).
+- Home do Cliente customizada com:
+  - Cabeçalho (Header) feito do zero.
+  - Barra de busca com filtro em tempo real usando .filter().
+  - Lista de serviços usando FlatList (mais eficiente para memória).
+  - Cards com sombras e design profissional.
 
-In the output, you'll find options to open the app in a
+C. NAVEGAÇÃO PROFISSIONAL (DRAWER):
+- Instalação das bibliotecas nativas:
+  - @react-navigation/drawer
+  - react-native-gesture-handler
+  - react-native-reanimated
+- Criação do arquivo babel.config.js para ativar as animações.
+- Configuração do Drawer Layout para esconder o cabeçalho padrão e usar o nosso.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+3. CONFIGURAÇÕES IMPORTANTES
+----------------------------
+- ARQUIVO babel.config.js: Essencial para o menu lateral funcionar.
+- LIMPEZA DE CACHE: Sempre que o app der erro de "Syntax" após mexer em arquivos de configuração, use:
+  > npx expo start -c
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+4. PALETA DE CORES (THEME)
+--------------------------
+- Fundo: #fef6e4
+- Títulos: #001858
+- Textos: #172c66
+- Botões: #f582ae
+- Detalhes (Cards/Busca): #f3d2c1 e #8bd3dd
 
-## Get a fresh project
+5. PRÓXIMOS OBJETIVOS (ONDE PARAMOS)
+------------------------------------
+- Finalizar a tela de 'Meus Agendamentos'.
+- Mover a função de 'Sair' para dentro do menu lateral.
+- Criar o formulário de marcação de horário.
 
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+------------------------------------------------------------
+Documento gerado em 16/04/2026 para fins de estudo e continuidade.
+============================================================
