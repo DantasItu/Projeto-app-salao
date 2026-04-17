@@ -11,21 +11,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SERVICOS } from "../../constants/mockData"; // Arquivos mockData temporario
 import { Colors } from "../../constants/theme";
-
-// 1. Dados de exemplo (Mock) - Simulando o que viria de um banco de dados
-const SERVICOS = [
-  {
-    id: "1",
-    nome: "Corte de Cabelo Masculino",
-    preco: "R$ 45,00",
-    duracao: "30 min",
-  },
-  { id: "2", nome: "Barba Completa", preco: "R$ 30,00", duracao: "20 min" },
-  { id: "3", nome: "Corte + Barba", preco: "R$ 70,00", duracao: "50 min" },
-  { id: "4", nome: "Sobrancelha", preco: "R$ 20,00", duracao: "15 min" },
-  { id: "5", nome: "Coloração", preco: "R$ 120,00", duracao: "60 min" },
-];
 
 export default function HomeScreen() {
   const [busca, setBusca] = useState("");
@@ -98,9 +85,11 @@ export default function HomeScreen() {
           >
             <View>
               <Text style={styles.cardText}>{item.nome}</Text>
-              <Text style={styles.cardDuration}>{item.duracao}</Text>
+              <Text style={styles.cardDuration}>{item.duracao} min</Text>
             </View>
-            <Text style={styles.cardPrice}>{item.preco}</Text>
+            <Text style={styles.cardPrice}>
+              R$ {item.preco.toFixed(2).replace(".", ",")}
+            </Text>
           </TouchableOpacity>
         )}
         ListEmptyComponent={() => (
