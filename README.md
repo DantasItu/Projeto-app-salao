@@ -5,66 +5,64 @@
 Este documento resume o progresso do desenvolvimento, a estrutura
 do aplicativo e as decisões técnicas tomadas até agora.
 
-1. ESTRUTURA DE PASTAS (EXPO ROUTER)
+1. ESTRUTURA DE PASTAS (ROTEAMENTO AVANÇADO)
 ------------------------------------
-O projeto utiliza o sistema de rotas baseado em arquivos:
+O projeto utiliza Grupos do Expo Router para separar as áreas por permissão:
 
 app/
-  ├── _layout.tsx         -> O "Porteiro" (Verifica login e protege rotas)
-  ├── login.tsx           -> Tela de entrada
-  └── (drawer)/           -> Grupo de telas que possuem o menu lateral
-       ├── _layout.tsx    -> Configuração visual do Menu Lateral (Drawer)
-       ├── index.tsx      -> Tela Principal (Home do Cliente)
-       └── agendamentos.tsx -> Tela de histórico de agendamentos
+  ├── _layout.tsx         -> O "Gatekeeper" (Porteiro): Monitora autenticação e redireciona por Role.
+  ├── login.tsx           -> Autenticação consultando dados do MockData.
+  ├── (drawer)/           -> ÁREA DO CLIENTE (Menu lateral, Agendamentos, Home).
+  ├── (admin)/            -> ÁREA DO ADMIN (Gestão de profissionais).
+  └── (profissional)/     -> ÁREA DO PROFISSIONAL (Agenda e histórico de serviços prestados).
 
 constants/
-  └── theme.ts            -> Centralização de cores e estilos
+  ├── theme.ts            -> Centralização de cores e identidade visual.
+  └── mockData.ts         -> "Banco de Dados" temporário com IDs únicos e relacionamentos.
 
-2. O QUE FOI FEITO (PASSO A PASSO)
+2. O QUE FOI FEITO (EVOLUÇÃO DO PROJETO)
 ----------------------------------
-A. SETUP E SEGURANÇA:
-- Inicialização com Expo e TypeScript.
-- Instalação do 'expo-secure-store' para salvar o token de login.
-- Configuração do Root Layout (_layout.tsx) para redirecionar o usuário:
-  - Sem Token -> Vai para /login
-  - Com Token -> Vai para / (Home)
+A. SISTEMA DE USUÁRIOS E SEGURANÇA (RBAC):
+- Implementação de Role-Based Access Control (Controle de acesso por papel).
+- Criação de usuários com tipos: 'cliente', 'profissional' e 'admin'.
+- Solução de segurança: O celular salva apenas o ID (Token). O app consulta o Role na "API" (MockData) a cada troca de rota.
+- Bloqueio de rotas: Se um cliente tenta entrar na área de admin, o app detecta e bloqueia automaticamente.
 
-B. INTERFACE E DESIGN:
-- Criação de uma paleta de cores personalizada (constants/theme.ts).
-- Home do Cliente customizada com:
-  - Cabeçalho (Header) feito do zero.
-  - Barra de busca com filtro em tempo real usando .filter().
-  - Lista de serviços usando FlatList (mais eficiente para memória).
-  - Cards com sombras e design profissional.
+B. BANCO DE DADOS MOCK (MOCKDATA.TS):
+- Uso de IDs únicos para Serviços (s1, s2...), Profissionais (p1, p2...) e Usuários.
+- Preços e durações salvos como NUMBER. Conversão para texto (R$ 0,00 e min) feita apenas na exibição.
+- Vínculo entre Profissionais e Serviços (Relacionamento muitos-para-muitos).
 
-C. NAVEGAÇÃO PROFISSIONAL (DRAWER):
-- Instalação das bibliotecas nativas:
-  - @react-navigation/drawer
-  - react-native-gesture-handler
-  - react-native-reanimated
-- Criação do arquivo babel.config.js para ativar as animações.
-- Configuração do Drawer Layout para esconder o cabeçalho padrão e usar o nosso.
+C. CALENDÁRIO INTERATIVO:
+- Instalação e configuração da 'react-native-calendars'.
+- Tradução completa para Português (LocaleConfig).
+- Seleção de datas com feedback visual usando as cores do tema.
 
-3. CONFIGURAÇÕES IMPORTANTES
+D. ÁREAS ESPECÍFICAS:
+- Home Admin: Listagem dinâmica de profissionais.
+- Home Profissional: Filtro inteligente que mostra apenas os serviços prestados pelo profissional logado.
+
+3. SOLUÇÕES DE ERROS (KNOWLEDGE BASE)
 ----------------------------
-- ARQUIVO babel.config.js: Essencial para o menu lateral funcionar.
-- LIMPEZA DE CACHE: Sempre que o app der erro de "Syntax" após mexer em arquivos de configuração, use:
-  > npx expo start -c
+- SINCRONIA DE LOGIN/LOGOUT: Resolvido usando `segments` como dependência no useEffect do Root Layout. Isso força a re-verificação da autenticação sempre que o usuário tenta mudar de tela.
+- ERROS DE TYPESCRIPT (SEGMENTS): Uso de Casting `(segments as string[])` para evitar erros de leitura no VS Code quando o array de rotas está vazio.
+- CONFLITO DE NAVEGAÇÃO: Adição de um pequeno `setTimeout` no redirecionamento do Root Layout para garantir que o Router esteja pronto antes de disparar o `replace`.
 
 4. PALETA DE CORES (THEME)
 --------------------------
-- Fundo: #fef6e4
-- Títulos: #001858
-- Textos: #172c66
-- Botões: #f582ae
-- Detalhes (Cards/Busca): #f3d2c1 e #8bd3dd
+- Background: #fef6e4 (Creme Limpo)
+- Headline: #001858 (Azul Profundo)
+- Paragraph: #172c66
+- Button: #f582ae (Rosa Destaque)
+- Main/Highlight: #f3d2c1 (Pêssego)
+- Secondary: #8bd3dd (Azul Tiffany)
 
-5. PRÓXIMOS OBJETIVOS (ONDE PARAMOS)
+5. PRÓXIMOS OBJETIVOS
 ------------------------------------
-- Finalizar a tela de 'Meus Agendamentos'.
-- Mover a função de 'Sair' para dentro do menu lateral.
-- Criar o formulário de marcação de horário.
+- Implementar o fluxo de criação de agendamento (Escolher data -> Escolher Profissional -> Escolher Serviço).
+- Estilizar o histórico de agendamentos do cliente.
+- Criar a visualização de faturamento para o administrador.
 
 ------------------------------------------------------------
-Documento gerado em 16/04/2026 para fins de estudo e continuidade.
+Documento atualizado em 17/04/2026.
 ============================================================
