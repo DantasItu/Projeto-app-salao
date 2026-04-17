@@ -28,7 +28,7 @@ export default function DraweLayout() {
       />
 
       {/* Menu Agendamentos */}
-      {/* <Drawer.Screen
+      <Drawer.Screen
         name="agendamentos"
         options={{
           drawerLabel: "Meus Agendamentos",
@@ -37,7 +37,7 @@ export default function DraweLayout() {
             <Ionicons name="calendar-outline" size={size} color={color} />
           ),
         }}
-      /> */}
+      />
     </Drawer>
   );
 }

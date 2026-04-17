@@ -24,8 +24,6 @@ export default function LoginScreen() {
 
       // Slava o token de maneira segura
       await SecureStore.setItemAsync("userToken", fakeToken);
-
-      Alert.alert("sucesso", "Login realizado!");
       Router.replace("/"); // vai pra homer
     } else {
       Alert.alert("Erro", "Usuario invalido!");
