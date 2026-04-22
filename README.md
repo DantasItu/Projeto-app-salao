@@ -1,68 +1,74 @@
-============================================================
-           DOCUMENTAÇÃO DO PROJETO: SALÃO PRO
-============================================================
+# Salão Pro - Sistema de Agendamento Profissional
 
-Este documento resume o progresso do desenvolvimento, a estrutura
-do aplicativo e as decisões técnicas tomadas até agora.
+Este é um ecossistema completo para gestão de salões de beleza, composto por um aplicativo mobile moderno e um backend robusto com banco de dados em nuvem.
 
-1. ESTRUTURA DE PASTAS (ROTEAMENTO AVANÇADO)
-------------------------------------
-O projeto utiliza Grupos do Expo Router para separar as áreas por permissão:
+## 🚀 Estrutura do Projeto
 
-app/
-  ├── _layout.tsx         -> O "Gatekeeper" (Porteiro): Monitora autenticação e redireciona por Role.
-  ├── login.tsx           -> Autenticação consultando dados do MockData.
-  ├── (drawer)/           -> ÁREA DO CLIENTE (Menu lateral, Agendamentos, Home).
-  ├── (admin)/            -> ÁREA DO ADMIN (Gestão de profissionais).
-  └── (profissional)/     -> ÁREA DO PROFISSIONAL (Agenda e histórico de serviços prestados).
+O projeto foi organizado em um modelo de monorepo para facilitar o desenvolvimento:
 
-constants/
-  ├── theme.ts            -> Centralização de cores e identidade visual.
-  └── mockData.ts         -> "Banco de Dados" temporário com IDs únicos e relacionamentos.
+-   **/app**: Aplicativo mobile desenvolvido com **React Native (Expo)** e **Expo Router**.
+-   **/backend**: Servidor de API desenvolvido com **Node.js**, **TypeScript** e **MongoDB**.
 
-2. O QUE FOI FEITO (EVOLUÇÃO DO PROJETO)
-----------------------------------
-A. SISTEMA DE USUÁRIOS E SEGURANÇA (RBAC):
-- Implementação de Role-Based Access Control (Controle de acesso por papel).
-- Criação de usuários com tipos: 'cliente', 'profissional' e 'admin'.
-- Solução de segurança: O celular salva apenas o ID (Token). O app consulta o Role na "API" (MockData) a cada troca de rota.
-- Bloqueio de rotas: Se um cliente tenta entrar na área de admin, o app detecta e bloqueia automaticamente.
+---
 
-B. BANCO DE DADOS MOCK (MOCKDATA.TS):
-- Uso de IDs únicos para Serviços (s1, s2...), Profissionais (p1, p2...) e Usuários.
-- Preços e durações salvos como NUMBER. Conversão para texto (R$ 0,00 e min) feita apenas na exibição.
-- Vínculo entre Profissionais e Serviços (Relacionamento muitos-para-muitos).
+## 🛠 Tecnologias Utilizadas
 
-C. CALENDÁRIO INTERATIVO:
-- Instalação e configuração da 'react-native-calendars'.
-- Tradução completa para Português (LocaleConfig).
-- Seleção de datas com feedback visual usando as cores do tema.
+### Frontend (Mobile)
+-   **React Native / Expo**: Framework principal.
+-   **Expo Router**: Navegação baseada em arquivos e proteção de rotas por Roles.
+-   **Expo SecureStore**: Armazenamento seguro de Tokens JWT.
+-   **React Native Calendars**: Customizado para exibir disponibilidade e feriados.
 
-D. ÁREAS ESPECÍFICAS:
-- Home Admin: Listagem dinâmica de profissionais.
-- Home Profissional: Filtro inteligente que mostra apenas os serviços prestados pelo profissional logado.
+### Backend (Servidor)
+-   **Node.js & Express**: Motor do servidor.
+-   **TypeScript**: Tipagem estática para maior segurança e robustez.
+-   **MongoDB Atlas**: Banco de Dados NoSQL em nuvem.
+-   **Mongoose**: Modelagem de dados e integração com o banco.
+-   **JWT (JSON Web Token)**: Autenticação segura e assinada.
+-   **BcryptJS**: Criptografia de senhas (hashing).
 
-3. SOLUÇÕES DE ERROS (KNOWLEDGE BASE)
-----------------------------
-- SINCRONIA DE LOGIN/LOGOUT: Resolvido usando `segments` como dependência no useEffect do Root Layout. Isso força a re-verificação da autenticação sempre que o usuário tenta mudar de tela.
-- ERROS DE TYPESCRIPT (SEGMENTS): Uso de Casting `(segments as string[])` para evitar erros de leitura no VS Code quando o array de rotas está vazio.
-- CONFLITO DE NAVEGAÇÃO: Adição de um pequeno `setTimeout` no redirecionamento do Root Layout para garantir que o Router esteja pronto antes de disparar o `replace`.
+---
 
-4. PALETA DE CORES (THEME)
---------------------------
-- Background: #fef6e4 (Creme Limpo)
-- Headline: #001858 (Azul Profundo)
-- Paragraph: #172c66
-- Button: #f582ae (Rosa Destaque)
-- Main/Highlight: #f3d2c1 (Pêssego)
-- Secondary: #8bd3dd (Azul Tiffany)
+## 🔐 Segurança e Regras de Negócio
 
-5. PRÓXIMOS OBJETIVOS
-------------------------------------
-- Implementar o fluxo de criação de agendamento (Escolher data -> Escolher Profissional -> Escolher Serviço).
-- Estilizar o histórico de agendamentos do cliente.
-- Criar a visualização de faturamento para o administrador.
+### Autenticação & Autorização
+-   **Token "Cego"**: O Token JWT carrega apenas o `_id` do usuário. Informações sensíveis como Nome, Email e Role são recuperadas pelo servidor através da rota `/api/auth/profile` a cada validação, garantindo a integridade dos dados.
+-   **Middleware de Proteção**: Rotas sensíveis são protegidas por um interceptador que valida a assinatura do Token antes de processar qualquer requisição.
+-   **Níveis de Acesso (Roles)**:
+    -   **Cliente**: Vê apenas seus agendamentos detalhados; outros slots aparecem apenas como "Ocupado".
+    -   **Profissional**: Visualiza apenas sua própria agenda de atendimentos.
+    -   **Admin**: Visão total de todos os agendamentos e profissionais.
 
-------------------------------------------------------------
-Documento atualizado em 17/04/2026.
-============================================================
+### Inteligência da Agenda
+-   **Ocupação Dinâmica**: O calendário calcula automaticamente as cores dos dias (Verde, Laranja, Vermelho) com base no volume de agendamentos vs. capacidade total dos profissionais.
+-   **Gestão de Duração**: O sistema respeita a duração de cada serviço (ex: Progressiva de 4 horas ocupa múltiplos slots de 30min automaticamente).
+-   **Feriados Automáticos**: Integração com a **Brasil API** para exibir feriados nacionais em vermelho no calendário em tempo real.
+
+---
+
+## 🏃 Como Rodar o Projeto
+
+### 1. Configurar o Backend
+```bash
+cd backend
+npm install
+# Certifique-se de que o arquivo .env contém a string de conexão do MongoDB
+npm run dev
+```
+
+### 2. Configurar o App (Frontend)
+```bash
+cd app
+npm install
+npx expo start
+```
+*Nota: O app está configurado para conectar ao IP local da máquina (`192.168.1.22`) para permitir testes em dispositivos físicos no mesmo Wi-Fi.*
+
+---
+
+## 📌 Histórico de Evolução
+1.  Estruturação da interface de login e navegação (Drawer).
+2.  Implementação do calendário inteligente com lógica de slots.
+3.  Migração do MockData para o MongoDB Atlas.
+4.  Criação do Backend com TypeScript e segurança JWT.
+5.  Otimização visual do calendário (Feriados, Círculos de agendamento e Status).

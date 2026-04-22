@@ -1,8 +1,9 @@
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, View } from "react-native";
-import { USUARIOS } from "../constants/mockData";
+import { ActivityIndicator, Alert, View, Platform } from "react-native";
+
+const API_URL = Platform.OS === 'android' ? 'http://192.168.1.22:3000' : 'http://localhost:3000';
 
 export default function RootLayout() {
   const [isLoading, setIsLoading] = useState(true);
@@ -14,13 +15,22 @@ export default function RootLayout() {
 
   const checkAuth = async () => {
     try {
-      const idUsuario = await SecureStore.getItemAsync("userToken");
-      if (idUsuario) {
-        const dados = USUARIOS.find((u) => u.id === idUsuario);
-        if (dados) {
-          setUserToken(idUsuario);
-          setUserData(dados);
+      const token = await SecureStore.getItemAsync("userToken");
+      
+      if (token) {
+        // Busca os dados REAIS no servidor para garantir segurança
+        const response = await fetch(`${API_URL}/api/auth/profile`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserToken(token);
+          setUserData(data);
         } else {
+          // Token expirado ou inválido
+          await SecureStore.deleteItemAsync("userToken");
+          await SecureStore.deleteItemAsync("userData");
           setUserToken(null);
           setUserData(null);
         }
@@ -44,35 +54,25 @@ export default function RootLayout() {
 
     const allSegments = segments as string[];
     const inAuthGroup = allSegments.includes("login");
-    
-    // Identifica as áreas pelo nome das pastas (grupos)
     const naAreaCliente = allSegments.includes("(drawer)");
     const naAreaAdmin = allSegments.includes("(admin)");
     const naAreaProfissional = allSegments.includes("(profissional)");
 
     const timer = setTimeout(() => {
-      // 1. Se não está logado, só pode ver a tela de Login
       if (!userToken && !inAuthGroup) {
         router.replace("/login");
         return;
       }
 
-      // 2. Se está logado, vamos conferir as permissões
       if (userToken && userData) {
-        
-        // Regra para Cliente: Se tentar entrar em Admin ou Profissional -> Bloqueia
         if (userData.role === "cliente" && (naAreaAdmin || naAreaProfissional)) {
-          Alert.alert("Acesso Negado", "Você não tem permissão para acessar esta área.");
-          router.replace("/(drawer)"); // Manda de volta para a Home dele
+          Alert.alert("Acesso Negado", "Sem permissão para esta área.");
+          router.replace("/(drawer)");
         }
-
-        // Regra para Profissional: Se tentar entrar em Admin -> Bloqueia
         if (userData.role === "profissional" && naAreaAdmin) {
           Alert.alert("Acesso Negado", "Área restrita para administradores.");
-          router.replace("/(profissional)"); // Manda para a Home dele (que criaremos)
+          router.replace("/(profissional)");
         }
-
-        // Se ele logar e cair no login, manda para a home certa de cada um
         if (inAuthGroup) {
           if (userData.role === "admin") router.replace("/(admin)");
           else if (userData.role === "profissional") router.replace("/(profissional)");
@@ -80,7 +80,6 @@ export default function RootLayout() {
         }
       }
     }, 10);
-
     return () => clearTimeout(timer);
   }, [userToken, userData, segments, isLoading]);
 

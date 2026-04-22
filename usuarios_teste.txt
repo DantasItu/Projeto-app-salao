@@ -1,0 +1,35 @@
+# USUÁRIOS DE TESTE - SALÃO PRO
+
+Todos os usuários abaixo utilizam a senha padrão: 123456
+
+---
+
+## 👤 CLIENTES
+- Nome: Dantas Cliente
+  Email: cliente@teste.com
+  Senha: 123456
+
+- Nome: Maria Souza
+  Email: maria@teste.com
+  Senha: 123456
+
+---
+
+## ✂️ PROFISSIONAIS
+- Nome: Ricardo Oliveira (Barbeiro)
+  Email: ricardo@salao.com
+  Senha: 123456
+
+- Nome: Ana Silva (Hair Stylist)
+  Email: ana@salao.com
+  Senha: 123456
+
+---
+
+## 🛠 ADMINISTRADOR
+- Nome: Admin Geral
+  Email: admin@salao.com
+  Senha: 123456
+
+---
+Dica: Ao logar com cada um, você verá uma visão diferente na tela de Agendamentos conforme as permissões de Role.
